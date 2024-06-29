@@ -85,6 +85,8 @@ export default function Home() {
 
   return (
     <div className="container">
+      <div className='seperator'>
+        <div className='left-side'>
       <h1>TODO List</h1>
       <form onSubmit={editTask ? updateTaskHandler : addTaskHandler}>
         <input 
@@ -93,22 +95,30 @@ export default function Home() {
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
         />
-        <button type="submit">{editTask ? 'Update Task' : 'Add'}</button>
+        <button className='add-new' type="submit">{editTask ? 'Update Task' : 'Add'}</button>
       </form>
-      <div>
+      </div>
+      <div className='right-side'>      
+        <div className='filters'>
         <label htmlFor="filter">Filter tasks: </label>
         <select id="filter" value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option value="all">All</option>
           <option value="not completed">Not Completed</option>
           <option value="completed">Completed</option>
         </select>
-      </div>
+        </div>
+      
+      
       <DataTable
+      className="data-table"
         columns={columns}
         data={filteredTasks}
         pagination
         noDataComponent="No tasks available"
       />
+      </div>
+
+      </div>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -128,9 +138,9 @@ export default function Home() {
             <option value="not completed">Not Completed</option>
             <option value="completed">Completed</option>
           </select>
-          <button type="submit">Update</button>
+          <button className='submit' type="submit">Update</button>
         </form>
-        <button onClick={closeModal}>Cancel</button>
+        <button className='cancel' onClick={closeModal}>Cancel</button>
       </Modal>
     </div>
   );
