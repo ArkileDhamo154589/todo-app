@@ -18,25 +18,41 @@ class Task(BaseModel):
     text: str
     status: str
 
-# creates an empty array and waits for tasks
+class TaskStatusUpdate(BaseModel):
+    status: str
+
 tasks: List[Task] = []
 
-# get tasks
-@app.get("/tasks")
+@app.get("/tasks", response_model=List[Task])
 def read_tasks():
     return tasks
 
-# post tasks
-@app.post("/tasks", response_model=Task)  # specify response model to return the created task
+@app.post("/tasks", response_model=Task)
 def create_task(task: Task):
     tasks.append(task)
-    return task  # return the created task
+    return task
 
-# delete tasks in route with task_id ex /tasks/1
-@app.delete("/tasks/{task_id}")
+@app.delete("/tasks/{task_id}", response_model=Task)
 def delete_task(task_id: int):
     task_to_delete = next((task for task in tasks if task.id == task_id), None)
     if task_to_delete is None:
-        raise HTTPException(status_code=404, detail="Task not Found")
+        raise HTTPException(status_code=404, detail="Task not found")
     tasks.remove(task_to_delete)
     return task_to_delete
+
+@app.put("/tasks/{task_id}", response_model=Task)
+def update_task(task_id: int, updated_task: Task):
+    task_to_update = next((task for task in tasks if task.id == task_id), None)
+    if task_to_update is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task_to_update.text = updated_task.text
+    task_to_update.status = updated_task.status
+    return task_to_update
+
+@app.put("/tasks/{task_id}/status", response_model=Task)
+def update_task_status(task_id: int, status_update: TaskStatusUpdate):
+    task_to_update = next((task for task in tasks if task.id == task_id), None)
+    if task_to_update is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task_to_update.status = status_update.status
+    return task_to_update
