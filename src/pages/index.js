@@ -1,104 +1,37 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2';
 import { FaTrash, FaEdit } from 'react-icons/fa';
 import Modal from 'react-modal';
+import { useTasks } from './modules/tasks';
+import { useModal } from './modules/modal';
 
 Modal.setAppElement('#__next'); // Set the root element for accessibility
 
 export default function Home() {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState('');
-  const [editTask, setEditTask] = useState(null);
-  const [editStatus, setEditStatus] = useState('');
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const { tasks, handleAddTask, handleDeleteTask, handleUpdateTask, handleUpdateTaskStatus } = useTasks();
+  const { editTask, newTask, editStatus, modalIsOpen, openModal, closeModal, setNewTask, setEditStatus } = useModal();
   const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
-    axios.get('http://localhost:8000/tasks')
-      .then(response => setTasks(response.data))
-      .catch(error => console.error('Error fetching tasks:', error));
-  }, []);
-
-  const addTask = (e) => {
+  const addTaskHandler = (e) => {
     e.preventDefault();
-    if (newTask.trim() !== '') {
-      const newTaskObj = {
-        id: tasks.length + 1,
-        text: newTask,
-        status: 'not completed',
-      };
-
-      axios.post('http://localhost:8000/tasks', newTaskObj)
-        .then(response => {
-          setTasks([...tasks, response.data]);
-          setNewTask('');
-          Swal.fire('Success', 'Task added successfully', 'success');
-        })
-        .catch(error => console.error('Error adding task:', error));
-    }
-  };
-
-  const deleteTask = (taskId) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios.delete(`http://localhost:8000/tasks/${taskId}`)
-          .then(() => {
-            setTasks(tasks.filter(task => task.id !== taskId));
-            Swal.fire('Deleted!', 'Your task has been deleted.', 'success');
-          })
-          .catch(error => console.error('Error deleting task:', error));
-      }
+    handleAddTask(newTask, (message) => {
+      Swal.fire('Success', message, 'success');
+      setNewTask('');
+    }, (error) => {
+      Swal.fire('Error', error, 'error');
     });
   };
 
-  const updateStatus = (taskId) => {
-    axios.put(`http://localhost:8000/tasks/${taskId}/status`, { status: 'completed' })
-      .then(response => {
-        const updatedTask = response.data;
-        setTasks(tasks.map(task => task.id === updatedTask.id ? updatedTask : task));
-        Swal.fire('Success', 'Task completed successfully', 'success');
-      })
-      .catch(error => console.error('Error updating task status:', error));
-  };
-
-  const editTaskHandler = (task) => {
-    setEditTask(task);
-    setNewTask(task.text);
-    setEditStatus(task.status);
-    setModalIsOpen(true);
-  };
-
-  const updateTask = (e) => {
+  const updateTaskHandler = (e) => {
     e.preventDefault();
-    axios.put(`http://localhost:8000/tasks/${editTask.id}`, { ...editTask, text: newTask, status: editStatus })
-      .then(response => {
-        const updatedTask = response.data;
-        setTasks(tasks.map(task => task.id === updatedTask.id ? updatedTask : task));
-        setEditTask(null);
-        setNewTask('');
-        setEditStatus('');
-        setModalIsOpen(false);
-        Swal.fire('Success', 'Task updated successfully', 'success');
-      })
-      .catch(error => console.error('Error updating task:', error));
+    handleUpdateTask(editTask.id, { ...editTask, text: newTask, status: editStatus }, (message) => {
+      Swal.fire('Success', message, 'success');
+      closeModal();
+    }, (error) => {
+      Swal.fire('Error', error, 'error');
+    });
   };
-
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'all') {
-      return true;
-    }
-    return task.status === filter;
-  });
 
   const columns = [
     {
@@ -115,7 +48,11 @@ export default function Home() {
           {row.status === 'not completed' && (
             <button 
               className="button complete" 
-              onClick={() => updateStatus(row.id)}
+              onClick={() => handleUpdateTaskStatus(row.id, (message) => {
+                Swal.fire('Success', message, 'success');
+              }, (error) => {
+                Swal.fire('Error', error, 'error');
+              })}
             >
               Complete Task
             </button>
@@ -128,17 +65,28 @@ export default function Home() {
       name: 'Actions',
       cell: row => (
         <div className="actions">
-          <FaEdit className="icon" onClick={() => editTaskHandler(row)} />
-          <FaTrash className="icon" onClick={() => deleteTask(row.id)} />
+          <FaEdit className="icon" onClick={() => openModal(row)} />
+          <FaTrash className="icon" onClick={() => handleDeleteTask(row.id, (message) => {
+            Swal.fire('Success', message, 'success');
+          }, (error) => {
+            Swal.fire('Error', error, 'error');
+          })} />
         </div>
       ),
     },
   ];
 
+  const filteredTasks = tasks.filter(task => {
+    if (filter === 'all') {
+      return true;
+    }
+    return task.status === filter;
+  });
+
   return (
     <div className="container">
       <h1>TODO List</h1>
-      <form onSubmit={editTask ? updateTask : addTask}>
+      <form onSubmit={editTask ? updateTaskHandler : addTaskHandler}>
         <input 
           type="text" 
           placeholder="Add a new task" 
@@ -163,13 +111,13 @@ export default function Home() {
       />
       <Modal
         isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
+        onRequestClose={closeModal}
         contentLabel="Edit Task"
         className="modal"
         overlayClassName="overlay"
       >
         <h2>Edit Task</h2>
-        <form onSubmit={updateTask}>
+        <form onSubmit={updateTaskHandler}>
           <input 
             type="text" 
             placeholder="Task name" 
@@ -182,7 +130,7 @@ export default function Home() {
           </select>
           <button type="submit">Update</button>
         </form>
-        <button onClick={() => setModalIsOpen(false)}>Cancel</button>
+        <button onClick={closeModal}>Cancel</button>
       </Modal>
     </div>
   );
