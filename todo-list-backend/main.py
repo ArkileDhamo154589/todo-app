@@ -12,10 +12,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class Task(BaseModel):
+    id: int
+    text: str
 
+tasks = [
+    {"id": 1, "text": "Task 1"},
+    {"id": 2, "text": "Task 2"},
+]
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
-
+@app.get("/tasks")
+def read_tasks():
+    return tasks
