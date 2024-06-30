@@ -20,14 +20,14 @@ Base.metadata.create_all(bind=engine)
 class Task(BaseModel):
     id: int
     text: str
-    status: str
+    status: int  # Change to int
 
 class TaskCreate(BaseModel):
     text: str
-    status: str
+    status: int  # Change to int
 
 class TaskStatusUpdate(BaseModel):
-    status: str
+    status: int  # Change to int
 
 def get_db():
     db = SessionLocal()

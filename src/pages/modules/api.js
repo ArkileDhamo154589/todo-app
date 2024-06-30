@@ -18,6 +18,6 @@ export const updateTask = (taskId, updatedTaskObj) => {
   return axios.put(`${baseURL}/tasks/${taskId}`, updatedTaskObj);
 };
 
-export const updateTaskStatus = (taskId) => {
-  return axios.put(`${baseURL}/tasks/${taskId}/status`, { status: 'completed' });
+export const updateTaskStatus = (taskId, status) => {
+  return axios.put(`${baseURL}/tasks/${taskId}/status`, { status });  
 };

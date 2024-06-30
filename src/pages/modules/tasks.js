@@ -15,7 +15,7 @@ export const useTasks = () => {
       const newTaskObj = {
         id: tasks.length + 1,
         text: newTask,
-        status: 'not completed',
+        status: 0, // Use 0 for 'not completed'
       };
 
       addTask(newTaskObj)
@@ -56,7 +56,7 @@ export const useTasks = () => {
   };
 
   const handleUpdateTaskStatus = (taskId, onSuccess, onError) => {
-    updateTaskStatus(taskId)
+    updateTaskStatus(taskId, 1)  // Pass 1 to mark as completed
       .then(response => {
         const updatedTask = response.data;
         setTasks(tasks.map(task => task.id === updatedTask.id ? updatedTask : task));

@@ -14,6 +14,6 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     text = Column(String, index=True)
-    status = Column(String, index=True)
+    status = Column(Integer , index=True) #change the status to int
 
 Base.metadata.create_all(bind=engine)

@@ -44,8 +44,10 @@ export default function Home() {
       selector: row => row.status,
       cell: row => (
         <div>
-          <div>{row.status}</div>
-          {row.status === 'not completed' && (
+          <div className={row.status === 1 ? 'green-text' : 'red-text'}>
+            {row.status === 1 ? 'completed' : 'not completed'}
+          </div>
+          {row.status === 0 && (
             <button 
               className="button complete" 
               onClick={() => handleUpdateTaskStatus(row.id, (message) => {
@@ -80,7 +82,7 @@ export default function Home() {
     if (filter === 'all') {
       return true;
     }
-    return task.status === filter;
+    return filter === 'completed' ? task.status === 1 : task.status === 0;
   });
 
   return (
@@ -135,8 +137,8 @@ export default function Home() {
             onChange={(e) => setNewTask(e.target.value)}
           />
           <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)}>
-            <option value="not completed">Not Completed</option>
-            <option value="completed">Completed</option>
+            <option value={0}>Not Completed</option>
+            <option value={1}>Completed</option>
           </select>
           <button className='submit' type="submit">Update</button>
         </form>
