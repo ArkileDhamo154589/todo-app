@@ -1,40 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TODO List Application
 
-## Getting Started
+This is a full-stack TODO list application built using Next.js for the frontend and FastAPI for the backend. The application allows users to add, update, delete, and filter tasks. The tasks are stored in a PostgreSQL database.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Add Task**: Users can add new tasks using an input field and a submit button.
+- **Update Task**: Users can update the text and status of a task using a modal form.
+- **Delete Task**: Users can delete tasks using a delete button with confirmation.
+- **Filter Tasks**: Users can filter tasks based on their status (all, not completed, completed).
+- **Complete Task**: Users can mark tasks as completed and revert them to not completed.
+- **Responsive UI**: The application is responsive and styled with SASS.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### Frontend
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+- **Next.js**: A React framework used for building the user interface.
+- **React DataTable Component**: A lightweight DataTable component for displaying tasks in a tabular format.
+- **Axios**: A promise-based HTTP client for making API requests to the FastAPI backend.
+- **SweetAlert2**: A library for displaying beautiful alerts and modals for user interactions.
+- **React Icons**: A library for including icons in the UI (e.g., edit and delete icons).
+- **React Modal**: A library for creating modal dialogs for editing tasks.
+- **SASS**: A CSS preprocessor used for styling the application.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### Backend
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- **FastAPI**: A modern, fast web framework for building APIs with Python 3.7+.
+- **SQLAlchemy**: An ORM used for interacting with the PostgreSQL database.
+- **PostgreSQL**: A powerful, open-source relational database for storing tasks.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
